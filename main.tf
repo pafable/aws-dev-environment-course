@@ -30,6 +30,7 @@ resource "aws_lambda_function" "mypython_lambda" {
     role = aws_iam_role.mypython_lambda_role.arn
     handler = "main.lambda_handler"
     runtime = "python3.8"
+    source_code_hash = "data.archive_file.myzip.output_base64sha256"
 }
 
 resource "aws_iam_role" "mypython_lambda_role" {
