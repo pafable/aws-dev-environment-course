@@ -10,12 +10,15 @@ terraform {
 }
 
 variable "aws_region" {
-    type = string
-    default = "us-east-1"
+    type = map
+    default = {
+        dev = "us-east-1"
+        prod = "eu-west-1"
+    }
 }
 
 provider "aws" {
-    region = var.aws_region
+    region = var.aws_region[terraform.workspace]
 }
 
 data "archive_file" "myzip" {
