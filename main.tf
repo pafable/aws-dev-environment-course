@@ -26,7 +26,7 @@ data "archive_file" "myzip" {
 
 resource "aws_lambda_function" "mypython_lambda" {
     filename = "main.zip"
-    function_name = "mypython_lambda_test"
+    function_name = "mypython_lambda_test_${terraform.workspace}"
     role = aws_iam_role.mypython_lambda_role.arn
     handler = "main.lambda_handler"
     runtime = "python3.8"
@@ -34,7 +34,7 @@ resource "aws_lambda_function" "mypython_lambda" {
 }
 
 resource "aws_iam_role" "mypython_lambda_role" {
-    name = "mypython_role"
+    name = "mypython_role_${terraform.workspace}"
 
     assume_role_policy = <<EOF
 {
@@ -51,4 +51,21 @@ resource "aws_iam_role" "mypython_lambda_role" {
     ]
 }
 EOF
+}
+
+resource "aws_sqs_queue" "main_queue" {
+    name = "my-main-queue_${terraform.workspace}"
+    delay_seconds = 30
+    max_message_size = 262144
+}
+
+resource "aws_sqs_queue" "dlq_queue" {
+    name = "my-dlq-queue_${terraform.workspace}"
+    delay_seconds = 30
+    max_message_size = 262144
+}
+
+resource "aws_lambda_event_source_mapping" "sqs-lambda-trigger" {
+    event_source_arn = aws_sqs_queue.main_queue.arn
+    function_name = aws_lambda_function.mypython_lambda.arn
 }
