@@ -13,7 +13,7 @@ variable "aws_region" {
     type = map
     default = {
         dev = "us-east-1"
-        prod = "eu-west-1"
+        prod = "eu-west-2"
     }
 }
 
