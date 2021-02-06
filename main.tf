@@ -8,11 +8,7 @@ terraform {
       }
   }
 
-  backend "s3" {
-      bucket = "terraform-states-course"
-      key = "course/terraform.tfstate"
-      region = "us-west-1"
-  }
+  backend "s3" {}
 }
 
 variable "aws_region" {}
