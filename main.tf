@@ -7,15 +7,15 @@ terraform {
           version = ">= 3.26"
       }
   }
+
+  backend "s3" {
+      bucket = "terraform-states-course"
+      key = "course/terraform.tfstate"
+      region = "us-west-1"
+  }
 }
 
-variable "aws_region" {
-    type = map
-    default = {
-        dev = "us-east-1"
-        prod = "eu-west-2"
-    }
-}
+variable "aws_region" {}
 
 provider "aws" {
     region = var.aws_region[terraform.workspace]
@@ -27,9 +27,11 @@ data "archive_file" "myzip" {
     output_path = "main.zip"
 }
 
+variable "lambda_name" {}
+
 resource "aws_lambda_function" "mypython_lambda" {
     filename = "main.zip"
-    function_name = "mypython_lambda_test_${terraform.workspace}"
+    function_name = "${var.lambda_name}_${terraform.workspace}"
     role = aws_iam_role.mypython_lambda_role.arn
     handler = "main.lambda_handler"
     runtime = "python3.8"
